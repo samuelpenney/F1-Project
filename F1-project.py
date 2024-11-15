@@ -15,28 +15,32 @@ def get_lap_data():
         data = json.load(f)
     return data
 
-# Calls both function
-pit_data = get_pit_data()
-lap_data = get_lap_data()
+# Defines a function called diplay_lapbylap which will display the time on every lap
+def display_lapbylap():
+    # Calls pit_data and lap_data functions
+    pit_data = get_pit_data()
+    lap_data = get_lap_data()
 
-
-# Grabs the neccesary data from json files
-laps = [pitstop["lap"] for race in pit_data["MRData"]["RaceTable"]["Races"] for pitstop in race["PitStops"]]
-lap_times = [
-    (lap["number"], timing["time"]) for race in lap_data["MRData"]["RaceTable"]["Races"]
-    for lap in race["Laps"] for timing in lap["Timings"]
-]
-# Prints the output
-'''
-Output looks like:
-Lap numbers: ['16', '41']
-Lap 1: 1:28.375
-Lap 2: 1:22.600
-Lap 3: 1:23.006
-Lap 4: 1:22.433
-Lap 5: 1:22.629
-Lap 6: 1:22.572
-'''
-print("Lap numbers:", laps)
-for lap_number, lap_time in lap_times:
-    print(f"Lap {lap_number}: {lap_time}")
+    # Gets important variables from the json files
+    driver_name = [pit_data["MRData"]["RaceTable"]["driverId"]]
+    laps = [pitstop["lap"] for race in pit_data["MRData"]["RaceTable"]["Races"] for pitstop in race["PitStops"]]
+    lap_times = [
+        (lap["number"], timing["time"]) for race in lap_data["MRData"]["RaceTable"]["Races"]
+        for lap in race["Laps"] for timing in lap["Timings"]
+    ]
+    # Prints out the drivers name, their pit laps and all of their times
+    print(driver_name[0])
+    print("Pitted at:", laps)
+    for lap_number, lap_time in lap_times:
+        lap_number = int(lap_number)
+        # Temp solution for tire compounds
+        if lap_number <= 16:
+            tire_compound = 'M'
+        else:
+            tire_compound = 'H'
+        print(f"Tire: {tire_compound}. Lap {lap_number}: {lap_time}")
+        # Temp solution to display pit
+        if lap_number == 16 or lap_number == 41:
+            print("PIT")
+# Calls the display_lapbylap function
+display_lapbylap()
